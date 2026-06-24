@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zee Lab Pharmacy - Trusted Healthcare & Medicines Delivered</title>
+    <meta name="description" content="Order genuine medicines and healthcare products from Zee Lab Pharmacy with fast delivery, secure payment, and premium medical care.">
+    
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Alpine.js for State Management -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Schema.org Markup for Pharmacy -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Pharmacy",
+      "name": "Zee Lab Pharmacy",
+      "description": "Trusted Healthcare & Medicines Delivered To Your Doorstep",
+      "openingHours": "Mo-Su 00:00-24:00",
+      "telephone": "+919876543210",
+      "priceRange": "$$"
+    }
+    </script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        medicalBlue: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        healthGreen: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        },
+                        darkBg: '#0f172a',
+                        darkCard: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .dark .glass { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(12px); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body x-data="pharmacyApp()" :class="darkMode ? 'dark text-gray-100 bg-slate-950' : 'text-gray-800 bg-slate-50/50'" class="antialiased">
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/919876543210?text=Hello%20Zee%20Lab%20Pharmacy,%20I%20would%20like%20information%20regarding%20medicines." 
+       target="_blank" 
+       rel="noopener"
+       class="fixed bottom-6 right-6 z-50 bg-healthGreen-500 text-white p-4 rounded-full shadow-2xl hover:bg-healthGreen-600 transform hover:scale-110 transition-all flex items-center justify-center group">
+        <i class="fab fa-whatsapp text-2xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 ease-out whitespace-nowrap pl-0 group-hover:pl-2 font-medium text-sm">WhatsApp Support</span>
+    </a>
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-gradient-to-r from-medicalBlue-700 to-healthGreen-700 text-white text-xs py-2 px-4 text-center font-medium tracking-wide">
+        <i class="fas fa-bolt mr-2 animate-pulse"></i> Super Fast Same-Day Delivery available in select metropolitan areas! Order before 2 PM.
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 w-full glass border-b border-gray-200/50 dark:border-gray-800/50 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" @click="currentTab = 'home'" class="flex items-center space-x-2.5">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-medicalBlue-600 to-healthGreen-500 flex items-center justify-center shadow-md shadow-medicalBlue-600/20">
+                    <i class="fas fa-mortar-pestle text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Zee Lab<span class="text-medicalBlue-600 dark:text-medicalBlue-500"> Pharmacy</span></span>
+                    <p class="text-[10px] font-semibold text-healthGreen-600 tracking-wider uppercase -mt-1">Licensed Care</p>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex space-x-8 text-sm font-medium">
+                <template x-for="item in ['home', 'medicines', 'track-order', 'about-us', 'contact-us']">
+                    <button @click="currentTab = item" 
+                            class="capitalize transition-colors relative py-2"
+                            :class="currentTab === item ? 'text-medicalBlue-600 dark:text-medicalBlue-500 font-semibold' : 'text-slate-600 dark:text-gray-300 hover:text-medicalBlue-600'">
+                        <span x-text="item.replace('-', ' ')"></span>
+                        <span x-show="currentTab === item" class="absolute bottom-0 left-0 w-full h-0.5 bg-medicalBlue-600 rounded-full"></span>
+                    </button>
+                </template>
+            </nav>
+
+            <!-- Actions Controls -->
+            <div class="flex items-center space-x-4">
+                <!-- Dark Mode Toggle -->
+                <button @click="darkMode = !darkMode" class="p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-slate-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <i :class="darkMode ? 'fas fa-sun text-amber-500' : 'fas fa-moon'"></i>
+                </button>
+
+                <!-- Cart Widget Button -->
+                <button @click="cartOpen = true" class="relative p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <i class="fas fa-shopping-bag text-lg"></i>
+                    <span x-show="cartCount() > 0" x-text="cartCount()" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white dark:ring-slate-950"></span>
+                </button>
+
+                <!-- Mobile Menu Icon -->
+                <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-slate-700 dark:text-gray-300">
+                    <i :class="mobileMenu ? 'fas fa-times' : 'fas fa-bars'"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Dropdown -->
+        <div x-show="mobileMenu" x-collapse class="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-900 px-4 py-4 space-y-2">
+            <template x-for="item in ['home', 'medicines', 'track-order', 'about-us', 'contact-us']">
+                <button @click="currentTab = item; mobileMenu = false" 
+                        class="block w-full text-left px-4 py-2.5 rounded-lg capitalize text-sm font-medium"
+                        :class="currentTab === item ? 'bg-medicalBlue-50 dark:bg-slate-800 text-medicalBlue-600 dark:text-medicalBlue-500' : 'text-slate-600 dark:text-gray-300'">
+                    <span x-text="item.replace('-', ' ')"></span>
+                </button>
+            </template>
+        </div>
+    </header>
+
+    <!-- Main Content Dynamic Container -->
+    <main class="min-h-screen">
+        
+        <!-- ================= HOME TAB ================= -->
+        <div x-show="currentTab === 'home'" x-transition class="space-y-20 pb-20">
+            <!-- Hero Canvas -->
+            <section class="relative overflow-hidden pt-12 md:pt-20 lg:pt-24 bg-gradient-to-b from-medicalBlue-50/50 via-transparent to-transparent dark:from-medicalBlue-950/20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-12 gap-12 items-center">
+                    <div class="md:col-span-7 space-y-6 text-center md:text-left">
+                        <div class="inline-flex items-center space-x-2 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-healthGreen-500 animate-ping"></span>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-gray-300 tracking-wide">100% Certified & Verified Pharmacy</span>
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-950 dark:text-white leading-tight">
+                            Trusted Healthcare & <span class="text-transparent bg-clip-text bg-gradient-to-r from-medicalBlue-600 to-healthGreen-500">Medicines</span> Delivered To Your Doorstep
+                        </h1>
+                        <p class="text-base sm:text-lg text-slate-600 dark:text-gray-400 max-w-xl mx-auto md:mx-0">
+                            Order genuine medicines and healthcare products with fast delivery, secure payment, and reliable customer support.
+                        </p>
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
+                            <button @click="currentTab = 'medicines'" class="px-8 py-4 rounded-xl bg-medicalBlue-600 hover:bg-medicalBlue-700 text-white font-semibold shadow-lg shadow-medicalBlue-600/25 transition transform hover:-translate-y-0.5">
+                                Order Now <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                            </button>
+                            <button @click="currentTab = 'medicines'" class="px-8 py-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-gray-50 text-slate-800 dark:text-white font-semibold border border-gray-200 dark:border-gray-700 shadow-sm transition">
+                                Browse Products
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hero Visual Illustration -->
+                    <div class="md:col-span-5 relative flex justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-medicalBlue-400/20 to-healthGreen-400/10 rounded-full filter blur-3xl -z-10 transform scale-75"></div>
+                        <div class="relative w-full max-w-md p-6 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800/80">
+                            <!-- Premium Medical / Pharmacy Graphic Interface Stub -->
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                        <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-medicalBlue-600 bg-medicalBlue-50 dark:bg-slate-800 px-2 py-0.5 rounded">e-Prescription Safe</span>
+                                </div>
+                                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl flex items-center space-x-4">
+                                    <div class="p-3 bg-medicalBlue-100 dark:bg-medicalBlue-900/50 rounded-xl text-medicalBlue-600">
+                                        <i class="fas fa-pills text-2xl"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/3 mb-2"></div>
+                                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-healthGreen-600"><i class="fas fa-check-circle"></i> In Stock</span>
+                                </div>
+                                <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl flex items-center space-x-4">
+                                    <div class="p-3 bg-healthGreen-100 dark:bg-healthGreen-900/50 rounded-xl text-healthGreen-600">
+                                        <i class="fas fa-truck-fast text-2xl"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2 mb-2"></div>
+                                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Trust Badges Metrics -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6 p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                    <div class="text-center p-2 space-y-2">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-medicalBlue-50 dark:bg-slate-800 flex items-center justify-center text-medicalBlue-600"><i class="fas fa-shield-halved text-xl"></i></div>
+                        <p class="font-bold text-sm dark:text-white">100% Genuine</p>
+                        <p class="text-xs text-gray-400">Direct from Brands</p>
+                    </div>
+                    <div class="text-center p-2 space-y-2">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-medicalBlue-50 dark:bg-slate-800 flex items-center justify-center text-medicalBlue-600"><i class="fas fa-shipping-fast text-xl"></i></div>
+                        <p class="font-bold text-sm dark:text-white">Fast Delivery</p>
+                        <p class="text-xs text-gray-400">Intact Cold-Chain</p>
+                    </div>
+                    <div class="text-center p-2 space-y-2">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-medicalBlue-50 dark:bg-slate-800 flex items-center justify-center text-medicalBlue-600"><i class="fas fa-credit-card text-xl"></i></div>
+                        <p class="font-bold text-sm dark:text-white">Secure Payments</p>
+                        <p class="text-xs text-gray-400">Fully Encrypted</p>
+                    </div>
+                    <div class="text-center p-2 space-y-2">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-medicalBlue-50 dark:bg-slate-800 flex items-center justify-center text-medicalBlue-600"><i class="fas fa-headset text-xl"></i></div>
+                        <p class="font-bold text-sm dark:text-white">Expert Support</p>
+                        <p class="text-xs text-gray-400">24/7 Pharmacists</p>
+                    </div>
+                    <div class="col-span-2 md:col-span-1 text-center p-2 space-y-2">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-medicalBlue-50 dark:bg-slate-800 flex items-center justify-center text-medicalBlue-600"><i class="fas fa-file-medical text-xl"></i></div>
+                        <p class="font-bold text-sm dark:text-white">Licensed Pharmacy</p>
+                        <p class="text-xs text-gray-400">Govt Approved</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Categories Highlights -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-tight dark:text-white">Shop Healthcare Categories</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Curated certified items for specific medical concerns</p>
+                    </div>
+                    <button @click="currentTab = 'medicines'" class="text-sm font-semibold text-medicalBlue-600 hover:text-medicalBlue-700 flex items-center">
+                        View All Catalog <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <template x-for="cat in categories">
+                        <div @click="selectedCategory = cat; currentTab = 'medicines'" class="p-5 bg-white dark:bg-slate-900 rounded-xl text-center border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md cursor-pointer transition transform hover:-translate-y-1 group">
+                            <div class="w-12 h-12 mx-auto rounded-lg bg-medicalBlue-50 dark:bg-slate-800 flex items-center justify-center text-medicalBlue-600 group-hover:bg-medicalBlue-600 group-hover:text-white transition mb-3">
+                                <i class="fas fa-prescription-bottle-medical text-lg"></i>
+                            </div>
+                            <p class="font-semibold text-sm truncate dark:text-white" x-text="cat"></p>
+                        </div>
+                    </template>
+                </div>
+            </section>
+
+            <!-- Animated Customer Reviews Carousel Component -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold dark:text-white">What Our Patients Say</h2>
+                    <p class="text-sm text-gray-500">Read verified reviews from customers who trust our delivery standards</p>
+                </div>
+                <div class="relative overflow-hidden py-4">
+                    <div class="flex space-x-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4">
+                        <template x-for="rev in reviews">
+                            <div class="flex-none w-80 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 snap-center space-y-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-full bg-medicalBlue-100 flex items-center justify-center font-bold text-medicalBlue-700 text-sm" x-text="rev.name.charAt(0)"></div>
+                                    <div>
+                                        <h4 class="font-bold text-sm dark:text-white" x-text="rev.name"></h4>
+                                        <div class="flex text-amber-400 text-xs">
+                                            <template x-for="i in rev.rating">
+                                                <i class="fas fa-star"></i>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 italic line-clamp-3" x-text="'&ldquo;' + rev.text + '&rdquo;'"></p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Delivery Information / Speed Metrics Section -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-gradient-to-br from-slate-900 to-medicalBlue-950 text-white rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-medicalBlue-600/10 rounded-full filter blur-2xl"></div>
+                    <div class="max-w-3xl space-y-6">
+                        <h2 class="text-2xl md:text-3xl font-bold">Optimized Medical Logistical Networks</h2>
+                        <p class="text-slate-300 text-sm md:text-base">We prioritize safety parameters and optimal storage criteria during transport chains ensuring efficacy metrics remain standard-grade upon arrival.</p>
+                        <div class="grid sm:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
+                            <div>
+                                <h4 class="font-bold text-healthGreen-500 text-lg"><i class="fas fa-clock mr-2"></i>Same Day Delivery</h4>
+                                <p class="text-xs text-slate-400 mt-1">Available across active microzones. Delivered within 4–6 hours of fulfillment.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-medicalBlue-500 text-lg"><i class="fas fa-truck-ramp-box mr-2"></i>Express Delivery</h4>
+                                <p class="text-xs text-slate-400 mt-1">Dispatched via prioritised courier lines. Complete tracking enabled.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-300 text-lg"><i class="fas fa-box-open mr-2"></i>Standard Delivery</h4>
+                                <p class="text-xs text-slate-400 mt-1">Dispatched inside secure, climate-insulated packaging within 24-48 hours.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ Section -->
+            <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+                <h2 class="text-2xl font-bold text-center mb-6 dark:text-white">Frequently Asked Questions</h2>
+                <template x-for="(faq, index) in faqs">
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                        <button @click="activeFaq === index ? activeFaq = null : activeFaq = index" class="w-full text-left px-6 py-4 flex justify-between items-center font-semibold text-sm dark:text-white">
+                            <span x-text="faq.q"></span>
+                            <i class="fas" :class="activeFaq === index ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                        <div x-show="activeFaq === index" x-collapse class="px-6 pb-4 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-50 dark:border-gray-800 pt-3">
+                            <p x-text="faq.a"></p>
+                        </div>
+                    </div>
+                </template>
+            </section>
+        </div>
+
+
+        <!-- ================= MEDICINES CATALOG TAB ================= -->
+        <div x-show="currentTab === 'medicines'" x-transition class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight dark:text-white">Medical Supplies & Pharmacy Catalog</h1>
+                <p class="text-sm text-gray-500 mt-1">Filter, discover, and purchase authenticated medications securely.</p>
+            </div>
+
+            <!-- Search, Filter & Controller Ribbon Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <div class="md:col-span-5 relative">
+                    <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                    <input type="text" x-model="searchQuery" placeholder="Search product name, category, brand name..." class="w-full pl-11 pr-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-medicalBlue-600 dark:text-white">
+                </div>
+                <div class="md:col-span-3">
+                    <select x-model="selectedCategory" class="w-full px-4 py-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-medicalBlue-600 dark:text-white">
+                        <option value="All">All Categories</option>
+                        <template x-for="cat in categories">
+                            <option :value="cat" x-text="cat"></option>
+                        </template>
+                    </select>
+                </div>
+                <div class="md:col-span-4 flex items-center space-x-3">
+                    <span class="text-xs font-medium text-gray-400 whitespace-nowrap">Max Price: ₹<span x-text="maxPriceFilter"></span></span>
+                    <input type="range" min="0" max="2000" step="50" x-model="maxPriceFilter" class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-medicalBlue-600">
+                </div>
+            </div>
+
+            <!-- Products Adaptive Grid Grid Layout -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <template x-for="med in filteredMedicines()" :key="med.id">
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition flex flex-col justify-between overflow-hidden relative group">
+                        
+                        <!-- Stock Status Tag Indicator -->
+                        <div class="absolute top-3 right-3 z-10">
+                            <span :class="med.stock > 0 ? 'bg-healthGreen-50 text-healthGreen-700 dark:bg-green-950/50 dark:text-green-400' : 'bg-red-50 text-red-700'" class="text-[10px] font-bold px-2 py-1 rounded-md tracking-wider uppercase">
+                                <span x-text="med.stock > 0 ? 'In Stock ('+med.stock+')' : 'Out of Stock'"></span>
+                            </span>
+                        </div>
+
+                        <!-- Card Visual Container -->
+                        <div class="p-4 space-y-4">
+                            <div class="w-full h-44 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center p-4 relative overflow-hidden">
+                                <img :src="med.image" :alt="med.name" class="h-full object-contain transform group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&auto=format&fit=crop&q=60'">
+                            </div>
+
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold text-medicalBlue-600 uppercase tracking-wider" x-text="med.category"></span>
+                                <h3 class="font-bold text-base text-slate-900 dark:text-white line-clamp-1" x-text="med.name"></h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[32px]" x-text="med.description"></p>
+                            </div>
+
+                            <div class="border-t border-gray-50 dark:border-gray-800/80 pt-2 flex items-center justify-between">
+                                <div>
+                                    <span class="text-lg font-extrabold text-slate-950 dark:text-white" x-text="'₹' + med.price"></span>
+                                    <p class="text-[9px] text-gray-400 tracking-tight" x-text="'Expiry: ' + med.expiry"></p>
+                                </div>
+                                
+                                <!-- Quantity Control Component Module -->
+                                <div class="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1" x-data="{ q: 1 }">
+                                    <button @click="if(q > 1) q--" class="w-6 h-6 rounded flex items-center justify-center text-xs hover:bg-white dark:hover:bg-slate-700 dark:text-white">-</button>
+                                    <span class="text-xs font-semibold w-5 text-center dark:text-white" x-text="q"></span>
+                                    <button @click="if(q < med.stock) q++" class="w-6 h-6 rounded flex items-center justify-center text-xs hover:bg-white dark:hover:bg-slate-700 dark:text-white">+</button>
+                                    
+                                    <!-- Hidden dynamic reference anchor for master add action context -->
+                                    <span x-init="$watch('q', value => med.selectedQty = value)" class="hidden"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Interaction Bar Component Footer -->
+                        <div class="p-4 bg-slate-50 dark:bg-slate-800/40 border-t border-gray-100 dark:border-gray-800 grid grid-cols-2 gap-2">
+                            <button @click="addToCart(med, med.selectedQty || 1)" :disabled="med.stock <= 0" class="px-3 py-2.5 rounded-lg border border-medicalBlue-600 text-medicalBlue-600 dark:text-medicalBlue-400 text-xs font-bold hover:bg-medicalBlue-50 dark:hover:bg-slate-800 transition disabled:opacity-50">
+                                Add To Cart
+                            </button>
+                            <button @click="addToCart(med, med.selectedQty || 1); cartOpen = true; currentTab = 'medicines'" :disabled="med.stock <= 0" class="px-3 py-2.5 rounded-lg bg-medicalBlue-600 hover:bg-medicalBlue-700 text-white text-xs font-bold transition disabled:opacity-50 shadow-sm">
+                                Buy Now
+                            </button>
+                        </div>
+
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Null State Data Dynamic Message Exception Screen -->
+            <div x-show="filteredMedicines().length === 0" class="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-gray-100 dark:border-gray-800">
+                <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 text-gray-400 mx-auto rounded-full flex items-center justify-center mb-4"><i class="fas fa-box-open text-2xl"></i></div>
+                <h3 class="text-lg font-bold dark:text-white">No Matching Medications Found</h3>
+                <p class="text-xs text-gray-400 max-w-xs mx-auto mt-1">Refine your query string parameters or switch to alternative criteria categories.</p>
+            </div>
+        </div>
+
+
+        <!-- ================= ORDER TRACKING TAB ================= -->
+        <div x-show="currentTab === 'track-order'" x-transition class="max-w-xl mx-auto px-4 sm:px-6 py-16 space-y-8">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-medicalBlue-50 dark:bg-slate-900 text-medicalBlue-600 mx-auto rounded-full flex items-center justify-center"><i class="fas fa-route text-xl"></i></div>
+                <h1 class="text-2xl font-bold dark:text-white">Consignment Tracker Platform</h1>
+                <p class="text-xs text-gray-400">Monitor logistical dispatch milestones of your medicine consignments in real-time.</p>
+            </div>
+
+            <!-- Input Query Frame Card Component -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Order ID Reference String</label>
+                    <div class="relative">
+                        <i class="fas fa-hashtag absolute left-4 top-3.5 text-gray-400"></i>
+                        <input type="text" x-model="trackingInput" placeholder="e.g., ZEE-98745-IND" class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm focus:outline-none dark:text-white">
+                    </div>
+                </div>
+                <button @click="searchTracking()" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-medicalBlue-600 dark:hover:bg-medicalBlue-700 text-white font-semibold text-sm transition shadow-md">
+                    Query Logistics Engine
+                </button>
+            </div>
+
+            <!-- Visual Flow Status Milestones Container Tracker UI -->
+            <div x-show="trackingResult" x-transition class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-8">
+                <div class="flex justify-between items-center border-b border-gray-50 dark:border-gray-800 pb-3">
+                    <div>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tracking Target</span>
+                        <h4 class="font-bold text-sm text-medicalBlue-600" x-text="trackingResult.id"></h4>
+                    </div>
+                    <span class="bg-healthGreen-50 text-healthGreen-700 text-xs font-bold px-2.5 py-1 rounded-full" x-text="trackingResult.status"></span>
+                </div>
+
+                <!-- Vertical Milestone Pipeline Components -->
+                <div class="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200 dark:before:bg-slate-800">
+                    <template x-for="(step, idx) in trackingSteps">
+                        <div class="relative">
+                            <!-- Step Badge Indicator Checkbox -->
+                            <div class="absolute -left-[29px] top-0.5 w-6 h-6 rounded-full flex items-center justify-center text-[10px]"
+                                 :class="idx <= trackingResult.stepIndex ? 'bg-medicalBlue-600 text-white shadow-md shadow-medicalBlue-600/20' : 'bg-gray-200 text-gray-400 dark:bg-slate-800'">
+                                <i class="fas fa-check" x-show="idx <= trackingResult.stepIndex"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm" :class="idx <= trackingResult.stepIndex ? 'text-slate-950 dark:text-white' : 'text-gray-400'" x-text="step.title"></h5>
+                                <p class="text-xs text-gray-400 mt-0.5" x-text="step.desc"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= ABOUT US TAB ================= -->
+        <div x-show="currentTab === 'about-us'" x-transition class="max-w-4xl mx-auto px-4 sm:px-6 py-16 space-y-12">
+            <div class="text-center space-y-3">
+                <h1 class="text-3xl font-bold tracking-tight dark:text-white">About Zee Lab Pharmacy</h1>
+                <p class="text-sm text-gray-500 max-w-xl mx-auto">Providing certified medical provisions and safe pharmacological standardizations direct to consumer thresholds since inception metrics.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <p>Zee Lab Pharmacy represents a modern paradigm in pharmacological distribution systems. We function as a validated direct provider of medical inventory protocols, ensuring cold-chain logistics metrics and supply verification criteria align perfectly with clinical paradigms.</p>
+                    <p>Our operation employs qualified, licensed pharmaceutical technicians tasked with auditing batch-code standards, structural packaging security, and absolute alignment with prescription validation constraints.</p>
+                    <p class="font-semibold text-slate-950 dark:text-white">Our absolute mandate is providing verified, authentic medication supplies at accessible baseline metrics without compromising delivery timelines.</p>
+                </div>
+                <div class="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-gray-800 grid grid-cols-2 gap-4 shadow-sm">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
+                        <h3 class="text-2xl font-black text-medicalBlue-600">100%</h3>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Genuine Tracked Stock</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
+                        <h3 class="text-2xl font-black text-healthGreen-600">24/7</h3>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Pharmacist Support</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
+                        <h3 class="text-2xl font-black text-indigo-600">500k+</h3>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Orders Dispatched</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
+                        <h3 class="text-2xl font-black text-amber-600">ISO</h3>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">Certified Protocols</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= CONTACT US TAB ================= -->
+        <div x-show="currentTab === 'contact-us'" x-transition class="max-w-5xl mx-auto px-4 sm:px-6 py-16 grid md:grid-cols-12 gap-8">
+            <div class="md:col-span-5 space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight dark:text-white">Contact Communications Core</h1>
+                    <p class="text-xs text-gray-400 mt-1">Submit institutional inquiries or feedback logs directly into our secure data processing systems.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-gray-800">
+                        <div class="w-9 h-9 rounded-lg bg-medicalBlue-50 dark:bg-slate-800 flex items-center justify-center text-medicalBlue-600"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Electronic Mail</p>
+                            <p class="text-xs font-semibold dark:text-white">support@zeelabpharmacy.com</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-gray-100 dark:border-gray-800">
+                        <div class="w-9 h-9 rounded-lg bg-healthGreen-50 dark:bg-slate-800 flex items-center justify-center text-healthGreen-600"><i class="fas fa-phone"></i></div>
+                        <div>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Telephony Support Line</p>
+                            <p class="text-xs font-semibold dark:text-white">+91 98765 43210</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interaction Input Contact Form Frame Card -->
+            <div class="md:col-span-7 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                <form @submit.prevent="submitInquiry()" class="space-y-4">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">Full Identity Designation</label>
+                            <input type="text" x-model="contactForm.name" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">Mobile Connection String</label>
+                            <input type="tel" x-model="contactForm.mobile" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">Email Address Address</label>
+                        <input type="email" x-model="contactForm.email" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">Categorical Subject Heading</label>
+                        <input type="text" x-model="contactForm.subject" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">Detailed Message Content Payload</label>
+                        <textarea x-model="contactForm.message" rows="4" required class="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white"></textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-medicalBlue-600 hover:bg-medicalBlue-700 text-white font-bold text-xs rounded-xl tracking-wider uppercase shadow-md transition">
+                        Dispatch Inquiry Sheet Data Log
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+
+    <!-- ================= SLIDEOVER SLIDING SHOPPING CART FRAME ================= -->
+    <div x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Overlay Mask Background -->
+            <div x-show="cartOpen" x-transition.opacity class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm" @click="cartOpen = false"></div>
+
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                <div x-show="cartOpen" x-transition:enter="transform transition ease-in-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transform transition ease-in-out duration-300" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="pointer-events-auto w-screen max-w-md">
+                    <div class="flex h-full flex-col bg-white dark:bg-slate-900 shadow-2xl border-l border-gray-100 dark:border-gray-800">
+                        
+                        <!-- Cart Header -->
+                        <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center"><i class="fas fa-shopping-basket mr-2 text-medicalBlue-600"></i> Selected Order Items</h2>
+                            <button @click="cartOpen = false" class="text-gray-400 hover:text-gray-500"><i class="fas fa-times text-lg"></i></button>
+                        </div>
+
+                        <!-- Product Stack Stream Loop List -->
+                        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+                            <template x-for="item in cart" :key="item.id">
+                                <div class="flex items-center space-x-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-gray-100/50 dark:border-gray-800">
+                                    <img :src="item.image" :alt="item.name" class="w-12 h-12 rounded-lg object-contain bg-white dark:bg-slate-700 p-1">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-bold text-xs truncate dark:text-white" x-text="item.name"></h4>
+                                        <p class="text-[10px] font-medium text-slate-950 dark:text-gray-300 mt-0.5" x-text="'₹' + item.price + ' &times; ' + item.qty"></p>
+                                    </div>
+                                    <div class="text-right flex flex-col items-end space-y-1">
+                                        <span class="text-xs font-extrabold dark:text-white" x-text="'₹' + (item.price * item.qty)"></span>
+                                        <button @click="removeFromCart(item.id)" class="text-[10px] text-red-500 hover:underline">Remove</button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div x-show="cart.length === 0" class="text-center py-20 text-gray-400 space-y-2">
+                                <i class="fas fa-shopping-cart text-3xl opacity-40"></i>
+                                <p class="text-xs font-medium">Your selection pipeline container is empty.</p>
+                            </div>
+                        </div>
+
+                        <!-- Subtotal / Voucher Code Calculations Panel Section Footer -->
+                        <div class="border-t border-gray-100 dark:border-gray-800 px-6 py-6 bg-slate-50 dark:bg-slate-800/30 space-y-4">
+                            <div class="flex space-x-2">
+                                <input type="text" x-model="couponCode" placeholder="PROMD20" class="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-700 text-xs rounded-lg focus:outline-none dark:text-white">
+                                <button @click="applyCoupon()" class="px-4 py-2 bg-slate-900 text-white dark:bg-slate-800 font-bold text-xs rounded-lg hover:bg-slate-800 transition">Apply</button>
+                            </div>
+
+                            <div class="space-y-1.5 text-xs text-gray-500 dark:text-gray-400">
+                                <div class="flex justify-between"><span>Subtotal Gross</span><span class="font-semibold text-slate-950 dark:text-white" x-text="'₹' + calculateSubtotal()"></span></div>
+                                <div class="flex justify-between text-healthGreen-600"><span>Coupon Value Discount</span><span x-text="'-₹' + discount"></span></div>
+                                <div class="flex justify-between border-t border-gray-200 dark:border-gray-800 pt-2 text-sm font-bold text-slate-950 dark:text-white">
+                                    <span>Net Payable Total Amount</span><span x-text="'₹' + calculateTotal()"></span>
+                                </div>
+                            </div>
+
+                            <!-- Checkout Action Button Routing -->
+                            <button @click="cartOpen = false; checkoutOpen = true" :disabled="cart.length === 0" class="w-full py-3.5 bg-medicalBlue-600 hover:bg-medicalBlue-700 text-white font-bold text-xs rounded-xl tracking-wider uppercase text-center block transition shadow-md disabled:opacity-50">
+                                Initialize Secure Checkout Process
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= FULL CHECKOUT OVERLAY MODAL WINDOW ================= -->
+    <div x-show="checkoutOpen" class="fixed inset-0 z-50 overflow-y-auto" x-transition>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-slate-950/50 backdrop-blur-sm" @click="checkoutOpen = false"></div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-100 dark:border-gray-800">
+                <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+                    <h3 class="text-base font-bold dark:text-white"><i class="fas fa-shield-heart text-medicalBlue-600 mr-2"></i> Clinical Procurement Dispatch Form</h3>
+                    <button @click="checkoutOpen = false" class="text-gray-400 hover:text-gray-500"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- Form Input Fields Block Array -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Patient & Consignment Destination Mapping</h4>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Full Legal Name</label>
+                                <input type="text" x-model="checkoutForm.name" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Contact Phone String</label>
+                                <input type="tel" x-model="checkoutForm.phone" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                        </div>
+                        <div>
+                            <!-- Secondary Line Contact Input email parameter -->
+                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Email Coordinates Notification Address</label>
+                            <input type="email" x-model="checkoutForm.email" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Physical Postal Delivery Address Line</label>
+                            <input type="text" x-model="checkoutForm.address" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">City Locality</label>
+                                <input type="text" x-model="checkoutForm.city" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">State Region</label>
+                                <input type="text" x-model="checkoutForm.state" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Postal Zip Code</label>
+                                <input type="text" x-model="checkoutForm.zip" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-xs focus:outline-none dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Integrations Provider Section Gateway Badging -->
+                    <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Unified Gateway Channels (Powered via Razorpay Engine)</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700 flex items-center justify-center text-center text-xs font-semibold cursor-pointer border-medicalBlue-500 text-medicalBlue-600">
+                                <i class="fas fa-qrcode mr-1.5"></i> UPI / GPay / PhonePe
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700 flex items-center justify-center text-center text-xs opacity-50">
+                                <i class="fas fa-credit-card mr-1.5"></i> Cards Credit/Debit
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700 flex items-center justify-center text-center text-xs opacity-50">
+                                <i class="fas fa-building-columns mr-1.5"></i> NetBanking Core
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-gray-700 flex items-center justify-center text-center text-xs opacity-50">
+                                <i class="fas fa-wallet mr-1.5"></i> Wallets Integrated
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 text-center mt-2"><i class="fas fa-lock text-healthGreen-600"></i> AES 256-Bit TLS Encryption protocols are maintained across live transmission channels.</p>
+                    </div>
+                </div>
+
+                <!-- Final Action Process Checkout Bar -->
+                <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] uppercase text-gray-400 block font-bold">Consolidated Payable Value</span>
+                        <span class="text-xl font-black text-slate-950 dark:text-white" x-text="'₹' + calculateTotal()"></span>
+                    </div>
+                    <button @click="triggerPaymentProcess()" class="px-6 py-3 bg-healthGreen-600 hover:bg-healthGreen-700 text-white font-bold text-xs rounded-xl tracking-wider uppercase shadow-md transition">
+                        Authorize Asset Settlement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= PREMIUM STRUCTURAL FOOTER COMPONENT MAPPING ================= -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
+            <div class="md:col-span-4 space-y-4">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-medicalBlue-600 flex items-center justify-center text-white text-base">
+                        <i class="fas fa-mortar-pestle"></i>
+                    </div>
+                    <span class="text-base font-bold text-white tracking-tight">Zee Lab Pharmacy</span>
+                </div>
+                <p class="text-slate-400 leading-relaxed pr-4">Premium certified supply chains maintaining global benchmarks across clinical logistical distribution pathways directly to active consumer parameters.</p>
+                <!-- Social Channels -->
+                <div class="flex space-x-4 text-slate-500 text-sm">
+                    <a href="#" class="hover:text-white"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 space-y-3">
+                <h4 class="text-white font-bold text-xs uppercase tracking-wider">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><button @click="currentTab = 'home'" class="hover:text-white transition">Home Dashboard</button></li>
+                    <li><button @click="currentTab = 'medicines'" class="hover:text-white transition">Medicines Catalog</button></li>
+                    <li><button @click="currentTab = 'track-order'" class="hover:text-white transition">Track Order</button></li>
+                    <li><button @click="currentTab = 'about-us'" class="hover:text-white transition">About Corporate</button></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-3 space-y-3">
+                <h4 class="text-white font-bold text-xs uppercase tracking-wider">Support Matrix Contacts</h4>
+                <ul class="space-y-2 text-slate-400">
+                    <li><i class="fas fa-phone mr-2 text-slate-600"></i> +91 98765 43210</li>
+                    <li><i class="fas fa-envelope mr-2 text-slate-600"></i> support@zeelab.com</li>
+                    <li><i class="fas fa-map-pin mr-2 text-slate-600"></i> Sector-62, Institutional Area, Noida, UP, India</li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-3 space-y-3">
+                <h4 class="text-white font-bold text-xs uppercase tracking-wider">Regulatory Compliance Licensing</h4>
+                <p class="text-slate-500 leading-relaxed">Drug License Num: DL-987452/A-2024. Compliance under strict mandates of Central Drugs Standard Control Organization (CDSCO) guidelines.</p>
+            </div>
+        </div>
+
+        <!-- System Baseline Bottom Attribution Ribbon Line -->
+        <div class="border-t border-slate-800/60 py-6 text-center text-slate-600 text-[11px] font-medium max-w-7xl mx-auto px-4">
+            &copy; 2026 Zee Lab Pharmacy Network Inc. All Rights Reserved. | <a href="#" class="hover:underline mx-1">Privacy Policy</a> | <a href="#" class="hover:underline mx-1">Terms & Conditions of Fulfillment</a>
+        </div>
+    </footer>
+
+
+    <!-- ================= MASTER APP LOGIC ARCHITECTURE STATE SCRIPT ================= -->
+    <script>
+        function pharmacyApp() {
+            return {
+                // Application Navigation Visibility State Engine Parameters
+                currentTab: 'home',
+                darkMode: false,
+                mobileMenu: false,
+                cartOpen: false,
+                checkoutOpen: false,
+                
+                // Content Filter Query State Targets
+                searchQuery: '',
+                selectedCategory: 'All',
+                maxPriceFilter: 2000,
+                couponCode: '',
+                discount: 0,
+                
+                // Track & Trace Operational Fields State 
+                trackingInput: '',
+                trackingResult: null,
+                activeFaq: null,
+
+                // Client Content Static Configuration Stubs
+                categories: ['Prescription Drugs', 'OTC Formulations', 'Cardiac Care', 'Diabetic Management', 'Nutritional Supplements', 'Vitamins & Health'],
+                
+                reviews: [
+                    { name: "Dr. Arvinder Singh", rating: 5, text: "The cold-chain isolation standard maintained for insulin distribution profiles remains highly consistent. Splendid service execution." },
+                    { name: "Meera Deshmukh", rating: 5, text: "Genuine drug packages delivered within hours inside discreet structural boxing boxes. Zee Lab Pharmacy represents high consistency." },
+                    { name: "Rohan Verma", rating: 4, text: "Excellent digital portal flow. Very clean transparency on active expiry parameters of drugs prior to authorization checkout." }
+                ],
+
+                faqs: [
+                    { q: "What is the standard delivery turnaround timeframe metric?", a: "Orders placed before 2:00 PM within metropolitan zone limits qualify for Same-Day Prime distribution. Standard channels complete processing within 24 to 48 hours globally." },
+                    { q: "How are inventory provisions authenticated for safety compliance metrics?", a: "Every production batch SKU undergoes verification against drug license parameters directly upon procurement from distribution warehouses to eliminate secondary counterfeit vectors." },
+                    { q: "Can live logistics tracking markers be referenced?", a: "Yes. Use the Consignment Tracker interface module with your Order Reference String for precise logistical milestone tracking." },
+                    { q: "Which core financial transaction processing networks are accepted?", a: "Our system interfaces safely via Razorpay processing channels supporting all active UPI applications, master card lines, and encrypted corporate NetBanking features." }
+                ],
+
+                trackingSteps: [
+                    { title: "Order Received", desc: "Batch verified, digital payload transmission completed." },
+                    { title: "Processing & Pharmacist Review", desc: "Prescription parameters approved, batch allocation active." },
+                    { title: "Packed in Insulated Unit", desc: "Secured inside tamper-proof, cold-insulated barrier frames." },
+                    { title: "Shipped & In Transit", desc: "Consignment integrated into prime distribution transport." },
+                    { title: "Out For Delivery", desc: "Logistics courier agent mapped to target physical node." },
+                    { title: "Delivered Successfully", desc: "Handover executed securely at patient threshold." }
+                ],
+
+                // Dynamic Hardcoded Initial Mock Medication Database (Acts as fallback layer or dynamic sheet mock framework)
+                medicines: [
+                    { id: "MED-001", name: "Lipitor Atorvastatin 20mg", category: "Cardiac Care", description: "Clinically indicated for structural regulation of lipid profiles and blood serum cholesterol reduction tracking.", price: 450, stock: 14, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400", expiry: "11/2028" },
+                    { id: "MED-002", name: "Metformin Glycomet 500mg", category: "Diabetic Management", description: "First-line formulation optimized for blood glucose maintenance control inside Type-2 diagnostic profiles.", price: 180, stock: 22, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400", expiry: "04/2027" },
+                    { id: "MED-003", name: "Amoxicillin Augmentin 625 DUO", category: "Prescription Drugs", description: "Broad-spectrum antibacterial architecture indicated for respiratory, systemic, and soft tissue micro-pathogen remediation.", price: 320, stock: 8, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400", expiry: "09/2026" },
+                    { id: "MED-004", name: "Paracetamol Crocin Advance 650mg", category: "OTC Formulations", description: "Fast-release antipyretic agent configured for temporary systemic pain suppression and fever homeostasis regulation.", price: 45, stock: 120, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400", expiry: "12/2029" },
+                    { id: "MED-005", name: "Neurobion Forte Tablets B-Complex", category: "Vitamins & Health", description: "Optimal neurological nerve health support complex loaded with vital B-vitamin variant parameters.", price: 120, stock: 65, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400", expiry: "01/2028" },
+                    { id: "MED-006", name: "Revital H Daily Health Supplement", category: "Nutritional Supplements", description: "Enriched multi-mineral blend with natural Ginseng extracts targeted towards metabolic vitality generation.", price: 550, stock: 0, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400", expiry: "08/2027" }
+                ],
+
+                cart: [],
+                
+                // Form Active States Storage Data Objects
+                checkoutForm: { name: '', phone: '', email: '', address: '', city: '', state: '', zip: '' },
+                contactForm: { name: '', mobile: '', email: '', subject: '', message: '' },
+
+                // Initialization Lifecycles Hook
+                init() {
+                    this.fetchGoogleSheetData();
+                },
+
+                // GOOGLE SHEETS LIVE SYNC DATA PIPELINE ENGINE 
+                fetchGoogleSheetData() {
+                    // Target Web Apps deployment URL endpoint derived from Google Sheet Script macros
+                    const sheetCSVUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3X_R_mock_endpoint_id_value/pub?output=csv";
+                    
+                    // Structural implementation architecture stub demonstrating automated asynchronous parsing:
+                    /*
+                    fetch(sheetCSVUrl)
+                        .then(response => response.text())
+                        .then(csvText => {
+                            // Core parsing loops logic converting rows data into explicit application structure state properties...
+                        }).catch(err => console.log('Data Stream Read error, defaulting to local backup baseline state.'));
+                    */
+                },
+
+                // Client Application Catalog Search Processing Logic Filter Engine
+                filteredMedicines() {
+                    return this.medicines.filter(m => {
+                        const matchQuery = m.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
+                                           m.category.toLowerCase().includes(this.searchQuery.toLowerCase());
+                        const matchCategory = this.selectedCategory === 'All' || m.category === this.selectedCategory;
+                        const matchPrice = m.price <= this.maxPriceFilter;
+                        return matchQuery && matchCategory && matchPrice;
+                    });
+                },
+
+                // Shopping Cart Operational Core Logic Interactions
+                addToCart(medicine, qty) {
+                    const parsedQty = parseInt(qty);
+                    const existingItem = this.cart.find(item => item.id === medicine.id);
+                    if (existingItem) {
+                        if ((existingItem.qty + parsedQty) <= medicine.stock) {
+                            existingItem.qty += parsedQty;
+                        } else {
+                            alert('Requested volumetric quantity surpasses active inventory metrics ceilings.');
+                        }
+                    } else {
+                        this.cart.push({
+                            id: medicine.id,
+                            name: medicine.name,
+                            price: medicine.price,
+                            image: medicine.image,
+                            qty: parsedQty
+                        });
+                    }
+                },
+
+                removeFromCart(id) {
+                    this.cart = this.cart.filter(item => item.id !== id);
+                },
+
+                cartCount() {
+                    return this.cart.reduce((sum, item) => sum + item.qty, 0);
+                },
+
+                calculateSubtotal() {
+                    return this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                },
+
+                applyCoupon() {
+                    if (this.couponCode.trim().toUpperCase() === 'ZEELAB20') {
+                        this.discount = Math.floor(this.calculateSubtotal() * 0.20);
+                        alert('Coupon Code applied: 20% system baseline discount enabled.');
+                    } else {
+                        alert('Invalid or inactive voucher parameter configuration.');
+                    }
+                },
+
+                calculateTotal() {
+                    const sub = this.calculateSubtotal();
+                    const net = sub - this.discount;
+                    return net < 0 ? 0 : net;
+                },
+
+                // Live Tracking Simulated Structural Retrieval Call
+                searchTracking() {
+                    if(!this.trackingInput.trim()) return alert('Please key in a valid target track sequence identifier.');
+                    
+                    // Simple programmatic simulated feedback tracking data matching expectations criteria:
+                    this.trackingResult = {
+                        id: this.trackingInput.toUpperCase(),
+                        status: "Logistics Routing Enroute",
+                        stepIndex: 3 // Maps cleanly to "Shipped & In Transit" status sequence state checkpoint array index
+                    };
+                },
+
+                // Contact Interactions Data Processing Simulation Outbound Hub
+                submitInquiry() {
+                    alert(`Inquiry logged successfully!\nData record mapping dispatched for Google Sheet registration for subject identifier: ${this.contactForm.subject}`);
+                    // Form Reset execution parameters
+                    this.contactForm = { name: '', mobile: '', email: '', subject: '', message: '' };
+                    this.currentTab = 'home';
+                },
+
+                // Secure Gateway Transaction Invocation Triggering Mechanism
+                triggerPaymentProcess() {
+                    if(!this.checkoutForm.name || !this.checkoutForm.phone || !this.checkoutForm.address) {
+                        return alert('Please populate compulsory destination parameters fields prior to initializing settlement loops.');
+                    }
+
+                    // Simulated Razorpay SDK Javascript Injection Configuration Framework:
+                    /*
+                    var options = {
+                        "key": "rzp_live_XXXXXXXXXXXXXX", 
+                        "amount": this.calculateTotal() * 100, // Denominated in standard atomic subunit paisa parameters
+                        "currency": "INR",
+                        "name": "Zee Lab Pharmacy Core",
+                        "description": "Secure Pharmacological Consignment Settlement",
+                        "handler": function (response){
+                             alert("Payment Reference verified: " + response.razorpay_payment_id);
+                             // Dispatches success state parameters array directly onto Sheets backend capture webhook...
+                        }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+                    */
+                    
+                    alert(`Payment Gateway Handshake Handover Initialized via Razorpay!\nSettlement Value Target: ₹${this.calculateTotal()}\n\nSimulating Success Parameters:\nTransaction Logged.\nOrder Reference ID generated: ZEE-${Math.floor(10000 + Math.random() * 90000)}-IND`);
+                    
+                    // Clean application state context reset routine execution loop
+                    this.cart = [];
+                    this.discount = 0;
+                    this.checkoutOpen = false;
+                    this.currentTab = 'home';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
